@@ -9,13 +9,6 @@ public interface IDayCycle {
 
     public void reproduce(int energyThreshold, int energyInheritedFromParent);
 
-    void regrowPlants(int number);
+    void regrowPlants(int totalPlants, int energy);
 
-    default void cycle(int energyThreshold, int energyInheritedFromParent, int numberOfPlants) {
-        cleanCorpses();
-        moveAllAnimals();
-        consumePlants();
-        reproduce(energyThreshold, energyInheritedFromParent);
-        regrowPlants(numberOfPlants);
-    }
 }

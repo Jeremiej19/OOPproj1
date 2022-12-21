@@ -32,19 +32,22 @@ public class SimulationEngine {
     }
 
     public void run() {
-
-        map.createNAnimals(startingAnimals, 100, 5, 2, 2, new NextGeneNormal(), new MutatorRandom());
-        map.createNPlants(startingPlants, 5);
-        List<Animal> animals = map.getAnimals();
-        for(int i=0; i<10; i++){
-            System.out.println(animals.get(0).stats());
-            map.cycle(energyNeededForReproduction,energyInheritedFromParent,startingAnimals);
+        int plantsEnergy = 5;
+        int animalsStartingEnergy = 100;
+        map.createNAnimals(startingAnimals, animalsStartingEnergy, 5, 2, 2, new NextGeneNormal(), new MutatorRandom());
+        map.createNPlants(startingPlants, plantsEnergy);
+        for(int i=0; i<1000; i++){
+            map.cleanCorpses();
+            map.moveAllAnimals();
+            map.consumePlants();
+            map.reproduce(energyNeededForReproduction,energyInheritedFromParent);
             System.out.println(map.getAnimals().size());
             System.out.println(mapVisualizer.draw(
                     new Vector2d(0, 0), new Vector2d(map.getSize().getHeight(), map.getSize().getWidth())));
+            map.regrowPlants(startingPlants,plantsEnergy);
+
         }
         System.out.println(map.getTopGeneFromAllGenomes());
-        System.out.println(animals.get(0).stats());
 
 
     }

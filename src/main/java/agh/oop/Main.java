@@ -10,7 +10,7 @@ import agh.oop.plant.Trees;
 
 public class Main {
     public static void main(String[] args) {
-        SimulationEngine engine = new SimulationEngine(new MapSize(10,10), new Earth(), new Trees(), 18, 40);
+        SimulationEngine engine = new SimulationEngine(new MapSize(10,10), new Earth(), new Toxic(), 10, 40);
         engine.run();
     }
 }

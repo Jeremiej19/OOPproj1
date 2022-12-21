@@ -14,13 +14,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle {
     private final Map<Vector2d, List<Animal>> animals = new HashMap<>();
+    private final List<Animal> corpses = new ArrayList<>();
     private final MapVisualizer visualizer = new MapVisualizer(this);
     private final List<Plant> plants = new ArrayList<>();
     private final List<Animal> deadAnimals = new ArrayList<>();
-    IPlantType plantType;
-    IMapType mapType;
-    MapSize size;
-    HashMap<Vector2d, Integer> deadAnimalsPerPosition = new HashMap<Vector2d, Integer>();
+    private final IPlantType plantType;
+    private final IMapType mapType;
+    private final MapSize size;
+    private final HashMap<Vector2d, Integer> deadAnimalsPerPosition = new HashMap<Vector2d, Integer>();
 
     public WorldMap(MapSize size, IMapType mapType, IPlantType plantType) {
         this.plantType = plantType;
@@ -71,6 +72,10 @@ public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle {
 
     @Override
     public void death(Animal animal) {
+        corpses.add(animal);
+    }
+
+    private void cleanCorpse(Animal animal) {
         deadAnimals.add(animal);
         Integer num = deadAnimalsPerPosition.getOrDefault(animal.getPosition(), 0);
         deadAnimalsPerPosition.put(animal.getPosition(), num + 1);
@@ -192,16 +197,16 @@ public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle {
 
 
     public int getAutosomalDominant() {
-        int[] geneCount = {0, 0, 0, 0, 0, 0, 0, 0};
+        Integer[] geneCount = {0, 0, 0, 0, 0, 0, 0, 0};
         for (Animal animal : getAnimals()) {
             geneCount[animal.getActiveGene()]++;
         }
-        Arrays.sort(geneCount);
-        return geneCount[7];
+        Integer max =Arrays.stream(geneCount) .max(Integer::compare).get();
+        return Arrays.asList(geneCount).indexOf(max);
     }
 
     public int getTopGeneFromAllGenomes() {
-        Integer[] geneCount = {0, 0, 0, 0, 0, 0, 0, 0};
+        int[] geneCount = {0, 0, 0, 0, 0, 0, 0, 0};
         getAnimals().forEach(a -> a.getGenome().forEach(x -> geneCount[x]++));
         int maxG = 0;
         for (int i = 0; i < geneCount.length; ++i) {
@@ -209,8 +214,7 @@ public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle {
                 maxG = i;
             }
         }
-        Integer max =Arrays.stream(geneCount) .max(Integer::compare).get();
-        return Arrays.asList(geneCount).indexOf(max);
+        return maxG;
     }
 
     public long getAverageEnergy() {
@@ -232,14 +236,16 @@ public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle {
 
     }
 
-
     public ChangePosition newLocation(Vector2d location) {
         return mapType.newLocation(this.size, location);
     }
 
     @Override
     public void cleanCorpses() {
-
+        for ( Animal corpse : corpses ) {
+            cleanCorpse(corpse);
+        }
+        corpses.clear();
     }
 
     @Override
@@ -275,7 +281,7 @@ public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle {
     }
 
     @Override
-    public void regrowPlants(int count) {
-
+    public void regrowPlants(int totalPlants, int energy) {
+        createNPlants(totalPlants-plants.size() ,energy);
     }
 }
