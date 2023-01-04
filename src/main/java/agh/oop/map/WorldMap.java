@@ -142,17 +142,17 @@ public class WorldMap implements IWorldMap, IAnimalObserver, IDayCycle, IMapRefr
             if ( plantAt(pos) == null &&
                     ThreadLocalRandom.current().nextInt(0, 101) <= plantType.getFertileField(pos) ) {
                 createPlantAt(pos,energy);
-                if( --amount < 0 ) {
+                if( --amount == 0 ) {
                     break;
                 }
             }
         }
         for( var pos : randomList ) {
             if ( plantAt(pos) == null ) {
-                createPlantAt(pos,energy);
                 if( --amount < 0 ) {
                     break;
                 }
+                createPlantAt(pos,energy);
             }
         }
 

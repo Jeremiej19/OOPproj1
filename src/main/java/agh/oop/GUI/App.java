@@ -49,7 +49,7 @@ public class App extends Application implements IMapRefreshObserver {
     private int grasPerCycle;
     private int energyLostPerCycle;
     private int numberOfAnimalsOnStart;
-    private int cellSize = 40;
+    private final int cellSize = 40;
     private int cols = 20 + 1;
     private int rows = 20 + 1;
     private int animalImgSize = cellSize - 10;
@@ -58,6 +58,7 @@ public class App extends Application implements IMapRefreshObserver {
     private IGeneMutator mutatorType = new MutatorRandom();
     private INextGene nextGeneType = new NextGeneNormal();
     private IMapType mapType;
+    private Animal selectedAnimal;
 
     @Override
     public void init() {
@@ -130,8 +131,7 @@ public class App extends Application implements IMapRefreshObserver {
         Label energyFromGrassLabel = new Label("energy per plant: ");
         Label energyRequiredToReproduceLabel = new Label("energy required to reproduce: ");
         Label animalStartEnergyLabel = new Label("animal starting energy: ");
-        //TODO:remove
-        Label grassPerCycleLabel = new Label("grassPerCycle-depricated: ");
+        Label grassPerCycleLabel = new Label("grass per cycle: ");
         Label energyLostPerCycleLabel = new Label("energy lost per cycle: ");
         Label numberOfAnimalsOnStartLabel = new Label("number of animals: ");
         Label worldTypeLabel = new Label("type of world: ");
@@ -156,10 +156,10 @@ public class App extends Application implements IMapRefreshObserver {
 
         TextField mapWidthField = new TextField("20");
         TextField mapHeightField = new TextField("20");
-        TextField energyFromGrassField = new TextField("5");
-        TextField energyRequiredToReproduceField = new TextField("30");
+        TextField energyFromGrassField = new TextField("9");
+        TextField energyRequiredToReproduceField = new TextField("20");
         TextField animalStartEnergyField = new TextField("15");
-        TextField grassPerCycleField = new TextField("1");
+        TextField grassPerCycleField = new TextField("15");
         TextField energyLostPerCycleField = new TextField("1");
         TextField numberOfAnimalsOnStartField = new TextField("35");
 //
@@ -172,7 +172,7 @@ public class App extends Application implements IMapRefreshObserver {
         nextGeneTypeField.getItems().addAll(
                 "NextGeneNormal",
 
-                "nextGeneCreazy" //TODO: not implemented
+                "nextGeneCreazy"
         );
         ComboBox geneMutatorTypeField = new ComboBox();
         geneMutatorTypeField.getItems().addAll(
@@ -181,8 +181,9 @@ public class App extends Application implements IMapRefreshObserver {
         );
         ComboBox plantTypeField = new ComboBox();
         plantTypeField.getItems().addAll(
-                "Toxic",
-                "Trees"
+                "Trees",
+                "Toxic"
+
         );
 
 
@@ -276,8 +277,10 @@ public class App extends Application implements IMapRefreshObserver {
             this.engine.addObserverMap(this);
 
             this.engine.run();
-            updateInfo();
-            updateInfo_right();
+//            updateInfo();
+//            updateInfo_right();
+            this.selectedAnimal = this.engine.map.getAnimals().get(0);
+            this.selectedAnimal.setSelected();
             generateMap();
             Thread engineThread = new Thread(this.engine);
             engineThread.start();
@@ -408,40 +411,32 @@ public class App extends Application implements IMapRefreshObserver {
         }
     }
     public void updateInfo_right() {
-//        for (int i = 0; i < rows - 1; i++) {
-//            this.info.getColumnConstraints().add(new ColumnConstraints(200));
-//        }
-//        for (int i = 0; i < cols - 1; i++) {
-//            this.info.getRowConstraints().add(new RowConstraints(200));
-//        }
 
-        Label allAnimals = new Label("Aktualna ilosc zwierzat: "+this.engine.map.getAnimals().size() + "");
+        Label allAnimals = new Label("Aktualna pozycja: "+ selectedAnimal.getPosition() + "");
         allAnimals.setStyle("-fx-text-fill: white");
         this.info_right.add(allAnimals, 2,0,span,span);
 
-        Label allPlants = new Label("Aktualna ilosc roslin: "+this.engine.map.getPlants().size() + "");
+        Label allPlants = new Label("Aktualna ilosc energii: "+ selectedAnimal.getEnergy() + "");
         allPlants.setStyle("-fx-text-fill: white");
         this.info_right.add(allPlants, 2,1,span,span);
 
-        Label allFreeSpace = new Label("Aktualna ilosc wolnych miejsc: "+this.engine.map.getFreeSpace() + "");
-        allFreeSpace.setStyle("-fx-text-fill: white");
-        this.info_right.add(allFreeSpace, 2,2,span,span);
-
-        Label gene = new Label("Aktualna najpopularniejszy gen: "+this.engine.map.getTopGeneFromAllGenomes() + "");
+        Label gene = new Label("Genotyp: "+ selectedAnimal.getGenome() + "");
         gene.setStyle("-fx-text-fill: white");
         this.info_right.add(gene, 2,3,span,span);
 
-        Label avg = new Label("Aktualna srednia energi dla zyjacych zwierzat: "+this.engine.map.getAverageEnergy() + "");
+        Label avg = new Label("Aktywny gen: "+ selectedAnimal.getActiveGene() + "");
         avg.setStyle("-fx-text-fill: white");
         this.info_right.add(avg, 2,4,span,span);
+
+        Label days = new Label("Dlugosc zycia: "+ selectedAnimal.getTimeAlive() + "");
+        this.info_right.add(days, 2,6,span,span);
+        days.setStyle("-fx-text-fill: white");
+
 
         Label avgLife = new Label("Aktualna snrednia dlugosc zycia martwych zwierzat: "+this.engine.map.getAverageLifespan() + "");
         avgLife.setStyle("-fx-text-fill: white");
         this.info_right.add(avgLife, 2,5,span,span);
 
-        Label days = new Label("Aktualna liczba dni: "+this.engine.map.getDays() + "");
-        this.info_right.add(days, 2,6,span,span);
-        days.setStyle("-fx-text-fill: white");
 
         var images = new Image("border_textures/wblocks.jpg", true);
         var bgImages = new BackgroundImage(
@@ -537,15 +532,16 @@ public class App extends Application implements IMapRefreshObserver {
             field.setGraphic(view);
 
             int head = d.getNextDirection();
+            head = (head + 9 + 5) % 8;
             switch (Integer.toString(head)) { // FIXME: getAcriveGene returns same value for all animals
                 case "0" -> field.setRotate(0);
-                case "1" -> field.setRotate(45);
-                case "2" -> field.setRotate(90);
-                case "3" -> field.setRotate(135);
-                case "4" -> field.setRotate(180);
-                case "5" -> field.setRotate(225);
-                case "6" -> field.setRotate(270);
-                case "7" -> field.setRotate(315);
+                case "1" -> field.setRotate(-45);
+                case "2" -> field.setRotate(-90);
+                case "3" -> field.setRotate(-135);
+                case "4" -> field.setRotate(-180);
+                case "5" -> field.setRotate(-225);
+                case "6" -> field.setRotate(-270);
+                case "7" -> field.setRotate(-315);
             }
 
             this.grid.add(field, d.getPosition().x + 1, d.getPosition().y + 1, span, span);

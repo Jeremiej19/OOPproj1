@@ -125,7 +125,7 @@ public class Animal extends AbstractMapElement implements Comparable<Animal> {
     }
 
     public int getActiveGene() {
-        return activeGene;
+        return genome.get(activeGene);
     }
 
     public void getNextGene() { //could be used for more friendly animal rotation?
@@ -133,7 +133,7 @@ public class Animal extends AbstractMapElement implements Comparable<Animal> {
     }
 
     public int getNextDirection() {
-        return MapDirection.fromNumber(genome.get(activeGene)).toDirection();
+        return (genome.get(activeGene));
 
     }
 
@@ -190,6 +190,9 @@ public class Animal extends AbstractMapElement implements Comparable<Animal> {
 //                '}';
 //    }
 
+    public void setSelected() {
+        this.texture = new Image("animal_textures/bee.png");
+    }
 
     public String stats() {
         return "Animal{" +
