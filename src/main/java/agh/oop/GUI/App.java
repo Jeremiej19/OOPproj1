@@ -165,29 +165,9 @@ public class App extends Application implements IMapRefreshObserver {
             btn2.setOnAction(ac -> {
                 engineThread.resume();
             });
-            Button newSimulationBtn = new Button("new simulation");
-            //FIXME: merge it into one btn and replace --
-            newSimulationBtn.setOnAction(ac -> {
 
-                Stage new_stage = new Stage();
-                HBox hBox = new HBox();
-                GridPane txtx = setupStart();
-                hBox.getChildren().addAll(txtx);
-                hBox.setAlignment(Pos.CENTER);
-                hBox.setStyle("-fx-font-size: 20px");
-                VBox vBox = new VBox();
-                vBox.getChildren().addAll(hBox);
-                vBox.setAlignment(Pos.CENTER);
-                vBox.setStyle("-fx-background-color: #56565e;");
-
-                VBox.setMargin(hBox, new Insets(10, 0, 50, 0));
-                Scene scene = new Scene(vBox, 720, 780);
-                new_stage.setScene(scene);
-                new_stage.setTitle("World");
-                new_stage.show();
-            });
             HBox hBox = new HBox();
-            hBox.getChildren().addAll(this.info,btn, btn2,newSimulationBtn, this.info_right);
+            hBox.getChildren().addAll(this.info,btn, btn2, this.info_right);
             hBox.setAlignment(Pos.CENTER);
 
 
