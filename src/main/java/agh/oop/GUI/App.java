@@ -271,7 +271,7 @@ public class App extends Application implements IMapRefreshObserver {
 
 
             startMenu.setVisible(false);
-            this.engine = new SimulationEngine(new MapSize(this.width, this.height), this.mutatorType, this.nextGeneType, this.mapType, this.plantType, this.numberOfAnimalsOnStart, 40, this.animalStartEnergy, this.energyFromGrass, this.energyToReproduce, this.grasPerCycle, this.energyLostPerCycle);
+            this.engine = new SimulationEngine(new MapSize(this.width, this.height), this.mutatorType, this.nextGeneType, this.mapType, this.plantType, this.numberOfAnimalsOnStart, 40, this.animalStartEnergy, this.energyFromGrass, this.energyToReproduce, this.grasPerCycle, this.energyLostPerCycle , 10 , 2, 2 );
             this.plants = engine.getplants();
             this.animals = engine.getanimals();
             this.engine.addObserverMap(this);

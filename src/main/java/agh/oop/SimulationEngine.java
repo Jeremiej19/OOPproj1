@@ -22,7 +22,7 @@ public class SimulationEngine implements Runnable {
     MapVisualizer mapVisualizer;
     private IMapRefreshObserver observer;
 
-    public SimulationEngine(MapSize mapSize, IGeneMutator gene, INextGene next, IMapType mapType, IPlantType plantType, int startingAnimals, int startingPlants, int animalStartEnergy, int energyFromGrass, int energyToReproduce, int grasPerCycle, int energyLostPerCycle) {
+    public SimulationEngine(MapSize mapSize, IGeneMutator gene, INextGene next, IMapType mapType, IPlantType plantType, int startingAnimals, int startingPlants, int animalStartEnergy, int energyFromGrass, int energyToReproduce, int grasPerCycle, int energyLostPerCycle, int genomeLength, int minMutations, int maxMutations) {
         this.energyNeededForReproduction = energyToReproduce;
         this.energyLostPerCycle = energyLostPerCycle;
         this.map = new WorldMap(mapSize, mapType, plantType);
