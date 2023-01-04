@@ -202,6 +202,7 @@ public class App extends Application implements IMapRefreshObserver {
     @Override
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
+        //adon
         HBox hBox = new HBox();
         GridPane txt = setupStart();
         hBox.getChildren().addAll(txt);
